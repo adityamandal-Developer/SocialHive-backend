@@ -19,7 +19,7 @@ const emailVerifyAccount = async (to, resetToken) => {
             html: `
             <p>You are receiving this email because you (or someone else) have requested to verify your account.</p>
             <p>Please click on the following link, or paste this into your browser to complete the process:</p>
-            <p>http://localhost:3000/account-verification/${resetToken}</p>
+            <p>https://social-hive-frontend.vercel.app/account-verification/${resetToken}</p>
             <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
             `,
         };
