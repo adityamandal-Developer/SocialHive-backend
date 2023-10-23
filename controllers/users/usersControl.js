@@ -76,22 +76,6 @@ exports.getProfile = asyncHandler(async (req, res, next) => {
         .populate({
             path: "posts",
             model: "Post",
-        })
-        .populate({
-            path: "following",
-            model: "User",
-        })
-        .populate({
-            path: "followers",
-            model: "User",
-        })
-        .populate({
-            path: "blockedUsers",
-            model: "User",
-        })
-        .populate({
-            path: "profileViewers",
-            model: "User",
         });
     res.json({
         status: "success",
