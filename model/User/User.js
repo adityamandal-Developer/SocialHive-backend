@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
             default: Date.now(),
         },
         isVerified: {
-            type: Boolean,
+            type: String,
             default: false,
         },
         profilePicture: {
