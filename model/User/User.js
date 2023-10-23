@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-
+const crypto = require("crypto");
+const { randomBytes, createHash } = require("crypto");
 //schema
 
 const userSchema = new mongoose.Schema(
@@ -27,13 +28,8 @@ const userSchema = new mongoose.Schema(
             default: Date.now(),
         },
         isVerified: {
-            type: String,
+            type: Boolean,
             default: false,
-        },
-        accountLevel: {
-            type: String,
-            enum: ["bronze", "silver", "gold"],
-            default: bronze,
         },
         profilePicture: {
             type: String,
@@ -49,18 +45,12 @@ const userSchema = new mongoose.Schema(
         location: {
             type: String,
         },
-        notificationPreferences: {
-            email: { type: String, default: true },
-        },
         gender: {
             type: String,
             enum: ["male", "female", "prefer not to say", "non-binary"],
         },
-        profileViewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-        followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-        blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-        posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
-        likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
+        posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+        likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
         passwordResetToken: {
             type: String,
         },
@@ -76,10 +66,40 @@ const userSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
+        toJSON: {
+            virtuals: true,
+        },
+        toObject: {
+            virtuals: true,
+        },
     }
 );
 
-//compile schema to model
+userSchema.methods.generatePasswordResetToken = function () {
+    const resetToken = randomBytes(20).toString("hex");
+    const hashedToken = createHash("sha256").update(resetToken).digest("hex");
 
+    this.passwordResetToken = hashedToken;
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+};
+
+//generate token for acc verify
+userSchema.methods.generateAccountVerificationToken = function () {
+    //generate token
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    //Assign the token to accountVerificationToken field
+    this.accountVerificationToken = crypto
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
+
+    // Update the accountVerificationExpires and when to expire
+    this.accountVerificationExpires = Date.now() + 10 * 60 * 1000; //! 10 minutes
+    return resetToken;
+};
+
+//compile schema to model
 const User = mongoose.model("User", userSchema);
 module.exports = User;
