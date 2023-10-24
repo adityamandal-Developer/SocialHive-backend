@@ -1,15 +1,17 @@
 const User = require("../model/User/User");
 
-const isAccountVerified = (req, res, next) => {
-    User.findById(req.userAuth._id)
-        .then(user => {
-            if (user && user.isVerified) {
-                return next();
-            }
-            return res.status(401).json({ message: "Unauthorized: Please verify your account" });
-        })
-        .catch(error => {
-            return res.status(500).json({ message: "There has been an error", error });
-        });
+const isAccountVerified = async (req, res, next) => {
+    try {
+        //Find the login user
+        const user = await User.findById(req.userAuth._id);
+        //check if user is verified
+        if (user?.isVerified) {
+            next();
+        } else {
+            res.status(401).json({ message: "Account not verified" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
 };
 module.exports = isAccountVerified;

@@ -156,7 +156,7 @@ exports.accountVerificationEmail = expressAsyncHandler(async (req, res) => {
     if (!user) {
         throw new Error("User not found");
     }
-    const token = await user.generateAccountVerificationToken(); // line 165
+    const token = await user.generateAccountVerificationToken();
     await user.save();
     emailVerifyAccount(user?.email, token);
     res.status(200).json({

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-const { randomBytes, createHash } = require("crypto");
 //schema
 
 const userSchema = new mongoose.Schema(
@@ -76,26 +75,26 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.generatePasswordResetToken = function () {
-    const resetToken = randomBytes(20).toString("hex");
-    const hashedToken = createHash("sha256").update(resetToken).digest("hex");
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    this.passwordResetToken = crypto
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
 
-    this.passwordResetToken = hashedToken;
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
+    //10 min to expire and reset token
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //! 10 minutes
     return resetToken;
 };
-
 //generate token for acc verify
 userSchema.methods.generateAccountVerificationToken = function () {
     //generate token
     const resetToken = crypto.randomBytes(20).toString("hex");
-    //Assign the token to accountVerificationToken field
     this.accountVerificationToken = crypto
         .createHash("sha256")
         .update(resetToken)
         .digest("hex");
 
-    // Update the accountVerificationExpires and when to expire
+    //the verification expires in 10 min and resets the token
     this.accountVerificationExpires = Date.now() + 10 * 60 * 1000; //! 10 minutes
     return resetToken;
 };

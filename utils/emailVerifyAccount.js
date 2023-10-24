@@ -21,6 +21,7 @@ const emailVerifyAccount = async (to, resetToken) => {
             <p>Please click on the following link, or paste this into your browser to complete the process:</p>
             <p>https://social-hive-frontend.vercel.app/account-verification/${resetToken}</p>
             <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+            <p>please sign out and login again after verifying your account<p>
             `,
         };
         //send the email
